@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using EasySql.Databases;
 using EasySql.DependencyInjection;
+using EasySql.Infrastructure;
 
 namespace EasySql.Query
 {
@@ -10,16 +11,18 @@ namespace EasySql.Query
 
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly DbContextOptions _options;
+        private readonly IEntityConfiguration _entityConfiguration;
 
-        public QueryExecutor(DbContextOptions options)
+        public QueryExecutor(DbContextOptions options, IEntityConfiguration entityConfiguration)
         {
             _options = options;
             _databaseConnectionFactory = options.ServiceProvider.GetRequiredService<IDatabaseConnectionFactory>();
+            _entityConfiguration = entityConfiguration;
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var sqlExpression = new QueryTranslator().Translate(expression);
+            var sqlExpression = new QueryTranslator(_entityConfiguration).Translate(expression);
 
             var commandBuilder = new SqlTranslator().Translate(sqlExpression);
 

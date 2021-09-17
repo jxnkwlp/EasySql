@@ -1,5 +1,6 @@
 ﻿using System;
 using EasySql.DependencyInjection;
+using EasySql.Infrastructure;
 using EasySql.Query;
 using EasySql.Query.SqlExpressions;
 
@@ -29,16 +30,20 @@ namespace EasySql
 
         private IQueryExecutor CreateQueryExecutor()
         {
-            return new QueryExecutor(Options);
+            return new QueryExecutor(Options, GetRequiredService<IEntityConfiguration>());
         }
 
         public IEntityQueryable<T> Query<T>() where T : class
         {
+            var entityConfiguration = Options.ServiceProvider.GetRequiredService<IEntityConfiguration>();
+
+            var entityType = entityConfiguration.RegisterEntity(typeof(T));
+
             var queryExecutor = CreateQueryExecutor();
 
             var queryProvider = new EntityQueryProvider(queryExecutor);
 
-            return new EntityQueryable<T>(queryProvider, new EntityQueryExpression(typeof(T)));
+            return new EntityQueryable<T>(queryProvider, new EntityQueryExpression(entityType));
         }
 
         public void Add<T>(T instance) where T : class
@@ -60,5 +65,11 @@ namespace EasySql
         {
             throw new System.NotImplementedException();
         }
+
+        internal virtual T GetRequiredService<T>() where T : class
+        {
+            return Options.ServiceProvider.GetRequiredService<T>();
+        }
+
     }
 }

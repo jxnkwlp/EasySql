@@ -228,7 +228,10 @@ namespace EasySql.Query
 
         protected virtual Expression VisitTable(TableExpression expression)
         {
-            _sqlCommandBuilder.Append($"{expression.Name}s");
+            if (!string.IsNullOrEmpty(expression.Alias))
+                _sqlCommandBuilder.Append($"{expression.Name} AS {expression.Alias}");
+            else
+                _sqlCommandBuilder.Append(expression.Name);
 
             return expression;
         }

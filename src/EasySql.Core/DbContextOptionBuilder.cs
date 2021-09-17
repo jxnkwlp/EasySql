@@ -1,5 +1,6 @@
 ﻿using System;
 using EasySql.DependencyInjection;
+using EasySql.Infrastructure;
 
 namespace EasySql
 {
@@ -13,10 +14,15 @@ namespace EasySql
         public DbContextOptionBuilder(IServiceRegistor serviceRegistor)
         {
             _serviceRegistor = serviceRegistor;
+
+            RegisterCoreServices();
         }
 
         internal DbContextOptionBuilder RegisterCoreServices()
         {
+            _serviceRegistor.AddService<IEntityConfiguration, EntityConfiguration>();
+            _serviceRegistor.AddService<IEntityConfigurationLoader, EntityConfigurationLoader>();
+
             return this;
         }
 

@@ -1,4 +1,5 @@
 ﻿using EasySql.Databases;
+using EasySql.Databases.TypeMappings;
 using EasySql.SqlServer.Databases;
 
 namespace EasySql.SqlServer
@@ -10,6 +11,7 @@ namespace EasySql.SqlServer
             builder.Options.SetDatabaseProvider(new DatabaseProvider(connectionString));
 
             builder.ReplaceService<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
+            builder.ReplaceService<ITypeMappingConfiguration, SqlServerTypeMappingConfiguration>();
 
             return builder;
         }

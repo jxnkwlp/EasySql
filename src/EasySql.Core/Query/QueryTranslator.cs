@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using EasySql.Infrastructure;
 using EasySql.Query.SqlExpressions;
 
 namespace EasySql.Query
 {
     public class QueryTranslator : ExpressionVisitor, IQueryTranslator
     {
-        private readonly StringBuilder sb = new StringBuilder();
-
         private readonly QueryExpression _queryExpression = new QueryExpression();
+
+        private readonly IEntityConfiguration _entityConfiguration;
+
+        public QueryTranslator(IEntityConfiguration entityConfiguration)
+        {
+            _entityConfiguration = entityConfiguration;
+        }
 
         public SqlExpression Translate(Expression expression)
         {
@@ -28,7 +33,9 @@ namespace EasySql.Query
         {
             if (node is EntityQueryExpression entityQueryExpression)
             {
-                _queryExpression.SetTable(new TableExpression(null, null, entityQueryExpression.EntityType.Name));
+                var entityDefinition = entityQueryExpression.EntityDefintion;
+
+                _queryExpression.SetTable(new TableExpression(entityDefinition.Schema, null, entityDefinition.Name));
 
                 return _queryExpression;
             }
@@ -182,16 +189,6 @@ namespace EasySql.Query
 
                 return source;
             }
-            //else if (node.Method == typeof(string).GetMethod("Contains", new[] { typeof(string) }))
-            //{
-            //    //_query.AppendWhereClause(new FunctionClause { MethodInfo = node.Method, Function = "like", Value = null });
-
-            //    var p1 = Visit(node.Arguments[0]);
-
-            //    return new MethodExpression(p1 as SqlExpression, node.Method, node.Method.ReturnType);
-
-            //    // return node;
-            //}
 
             return base.VisitMethodCall(node);
         }
@@ -230,6 +227,9 @@ namespace EasySql.Query
 
         protected override Expression VisitMember(MemberExpression node)
         {
+            // var innerExpression = Visit(node.Expression);
+            // _entityConfiguration.FindEntity(_queryExpression);
+
             return new ColumnExpression(null, node.Member.Name);
         }
 
