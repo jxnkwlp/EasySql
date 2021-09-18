@@ -10,11 +10,14 @@ namespace EasySql.Query
     {
         private readonly QueryExpression _queryExpression = new QueryExpression();
 
+        private readonly QueryContext _queryContext;
         private readonly IEntityConfiguration _entityConfiguration;
 
-        public QueryTranslator(IEntityConfiguration entityConfiguration)
+        public QueryTranslator(QueryContext queryContext)
         {
-            _entityConfiguration = entityConfiguration;
+            _queryContext = queryContext;
+            _entityConfiguration = queryContext.Options.GetRequiredService<IEntityConfiguration>();
+
         }
 
         public SqlExpression Translate(Expression expression)
@@ -35,7 +38,7 @@ namespace EasySql.Query
             {
                 var entityDefinition = entityQueryExpression.EntityDefintion;
 
-                _queryExpression.SetTable(new TableExpression(entityDefinition.Schema, null, entityDefinition.Name));
+                _queryExpression.SetTable(entityDefinition);
 
                 return _queryExpression;
             }
@@ -195,6 +198,18 @@ namespace EasySql.Query
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
+            if (node.Left is ConstantExpression constant1 && constant1.Value == null)
+            {
+                var o = Visit(node.Right);
+                return new SqlUnaryExpression(o, node.NodeType, typeof(bool));
+            }
+
+            if (node.Right is ConstantExpression constant2 && constant2.Value == null)
+            {
+                var o = Visit(node.Left);
+                return new SqlUnaryExpression(o, node.NodeType, typeof(bool));
+            }
+
             var n1 = Visit(node.Left);
 
             var n2 = Visit(node.Right);
@@ -217,7 +232,7 @@ namespace EasySql.Query
                 return new SqlUnaryExpression(o, node.NodeType, node.Type);
             }
 
-            return base.VisitUnary(node);
+            return node;
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
@@ -225,19 +240,45 @@ namespace EasySql.Query
             return new SqlConstantExpression(node.Value);
         }
 
+        protected override Expression VisitParameter(ParameterExpression node)
+        {
+            var entity = _entityConfiguration.FindEntity(node.Type);
+            if (entity != null)
+            {
+                if (_queryExpression.Table.Entity.EntityType == entity.EntityType)
+                {
+                    return _queryExpression.Table;
+                }
+
+                return new TableExpression(entity, node.Name);
+            }
+
+            return node;
+        }
+
         protected override Expression VisitMember(MemberExpression node)
         {
-            // var innerExpression = Visit(node.Expression);
-            // _entityConfiguration.FindEntity(_queryExpression);
+            var innerExpression = Visit(node.Expression);
 
-            return new ColumnExpression(null, node.Member.Name);
+            if (innerExpression is TableExpression table)
+            {
+                var column = table.Entity.FindColumn(node.Member);
+                if (column == null)
+                {
+                    throw new Exception($"The column '{node.Member}' not found.");
+                }
+
+                return new ColumnExpression(column, null, table.Alias);
+            }
+
+            return node;
         }
 
         protected override Expression VisitNew(NewExpression node)
         {
             foreach (var item in node.Members)
             {
-                _queryExpression.AddProjection(new ColumnExpression(null, item.Name));
+                // _queryExpression.AddProjection(new ColumnExpression(null, item.Name));
             }
 
             return node;

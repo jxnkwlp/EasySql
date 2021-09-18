@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using EasySql.Databases;
+using EasySql.Infrastructure;
 using EasySql.Query.SqlExpressions;
 
 namespace EasySql.Query
@@ -32,6 +33,12 @@ namespace EasySql.Query
 
         protected virtual string AliasSeparator { get; } = " AS ";
 
+        private readonly ISqlGenerationHelper _sqlGenerationHelper;
+
+        public SqlTranslator(QueryContext queryContext)
+        {
+            _sqlGenerationHelper = queryContext.Options.GetRequiredService<ISqlGenerationHelper>();
+        }
 
         public ISqlCommandBuilder Translate(SqlExpression expression)
         {
@@ -148,7 +155,17 @@ namespace EasySql.Query
 
         protected virtual Expression VisitColumn(ColumnExpression expression)
         {
-            _sqlCommandBuilder.Append(expression.Name);
+            _sqlCommandBuilder
+                .Append(_sqlGenerationHelper.DelimitIdentifier(expression.TableAlias))
+                .Append(".")
+                .Append(_sqlGenerationHelper.DelimitIdentifier(expression.Name));
+
+            if (!string.IsNullOrEmpty(expression.Alias))
+            {
+                _sqlCommandBuilder
+                    .Append(AliasSeparator)
+                    .Append(_sqlGenerationHelper.DelimitIdentifier(expression.Alias));
+            }
 
             return expression;
         }
@@ -228,10 +245,10 @@ namespace EasySql.Query
 
         protected virtual Expression VisitTable(TableExpression expression)
         {
-            if (!string.IsNullOrEmpty(expression.Alias))
-                _sqlCommandBuilder.Append($"{expression.Name} AS {expression.Alias}");
-            else
-                _sqlCommandBuilder.Append(expression.Name);
+            _sqlCommandBuilder
+                .Append(_sqlGenerationHelper.DelimitIdentifier(expression.Name, expression.Schame))
+                .Append(AliasSeparator)
+                .Append(_sqlGenerationHelper.DelimitIdentifier(expression.Alias));
 
             return expression;
         }

@@ -9,28 +9,28 @@ namespace EasySql.Query
     {
         //public static readonly ParameterExpression QueryContextParameter = Expression.Parameter(typeof(QueryExecutor), "QueryExecutor");
 
+        private readonly QueryContext _queryContext;
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly DbContextOptions _options;
         private readonly IEntityConfiguration _entityConfiguration;
 
-        public QueryExecutor(DbContextOptions options, IEntityConfiguration entityConfiguration)
+        public QueryExecutor(QueryContext queryContext)
         {
-            _options = options;
-            _databaseConnectionFactory = options.ServiceProvider.GetRequiredService<IDatabaseConnectionFactory>();
-            _entityConfiguration = entityConfiguration;
+            _queryContext = queryContext;
+            _databaseConnectionFactory = queryContext.Options.GetRequiredService<IDatabaseConnectionFactory>();
+            _entityConfiguration = queryContext.Options.GetRequiredService<IEntityConfiguration>();
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var sqlExpression = new QueryTranslator(_entityConfiguration).Translate(expression);
+            var sqlExpression = new QueryTranslator(_queryContext).Translate(expression);
 
-            var commandBuilder = new SqlTranslator().Translate(sqlExpression);
+            var commandBuilder = new SqlTranslator(_queryContext).Translate(sqlExpression);
 
             var command = commandBuilder.Build();
 
             IDatabase database = new Database();
 
-            var connection = _databaseConnectionFactory.Create(_options);
+            var connection = _databaseConnectionFactory.Create(_queryContext.Options);
 
             return database.Execute<TResult>(command, new DatabaseCommandContext(connection));
         }

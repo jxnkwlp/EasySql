@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using EasySql;
 using EasySql.DependencyInjection;
@@ -13,6 +13,7 @@ namespace ConsoleApp1
         private static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            Console.WriteLine();
 
             //  
             IServiceCollection services = new ServiceCollection();
@@ -27,20 +28,11 @@ namespace ConsoleApp1
             });
 
             var query = dbContext.Query<Order>();
+            var query2 = dbContext.Query<Product>();
 
 
-            for (int i = 0; i < 5; i++)
-            {
-                var sw = Stopwatch.StartNew();
-
-                Console.WriteLine($"Count: {query.Count()}");
-
-                sw.Stop();
-
-                Console.WriteLine(sw.Elapsed);
-            }
-
-          
+            // Console.WriteLine(query.Where(x => x.Id>10).ToSqlText());
+            Console.WriteLine(query2.Where(x => x.Published == true).ToSqlText());
 
             // query.Where(x => x.Id <= 10).ToList();
             // query.Where(x => (x.Id <= 10 || x.Id > 30) && x.Age > 50).ToList();
@@ -71,54 +63,6 @@ namespace ConsoleApp1
         }
     }
 
-    //internal class MyQueryable<T> : IQueryable<T>
-    //{
-    //    public Type ElementType => typeof(IQueryable<T>);
-
-    //    public Expression Expression { get; }
-
-    //    public IQueryProvider Provider { get; }
-
-    //    public MyQueryable(Expression expression)
-    //    {
-    //        Expression = expression;
-    //        Provider = new MyQueryProvider();
-    //    }
-
-    //    public IEnumerator<T> GetEnumerator()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    IEnumerator IEnumerable.GetEnumerator()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
-    //internal class MyQueryProvider : IQueryProvider
-    //{
-    //    public IQueryable CreateQuery(Expression expression)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public object Execute(Expression expression)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public TResult Execute<TResult>(Expression expression)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
     public class Student
     {
         public int Id { get; set; }
@@ -127,13 +71,25 @@ namespace ConsoleApp1
         public DateTime BirthDay { get; set; }
     }
 
+    [Table("Orders")]
     public class Order
     {
-        public int OrderID { get; set; }
+        [Column("OrderID")]
+        public int Id { get; set; }
         public string CustomerID { get; set; }
         public int EmployeeID { get; set; }
         public DateTime? OrderDate { get; set; }
         public DateTime? RequiredDate { get; set; }
         public string ShipName { get; set; }
+
+    }
+
+    [Table("Products")]
+    public class Product
+    {
+        public int ProductID { get; set; }
+        public string ProductName { get; set; }
+        public bool Discontinued { get; set; }
+        public bool Published { get; set; }
     }
 }

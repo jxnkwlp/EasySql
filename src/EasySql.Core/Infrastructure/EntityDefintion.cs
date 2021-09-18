@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace EasySql.Infrastructure
 {
@@ -21,5 +23,9 @@ namespace EasySql.Infrastructure
             Colunmns = colunmns;
         }
 
+        public ColunmnDefintion FindColumn(MemberInfo member)
+        {
+            return Colunmns.FirstOrDefault(x => x.Member == member);
+        }
     }
 }

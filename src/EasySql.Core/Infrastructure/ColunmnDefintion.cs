@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Reflection;
 using EasySql.Databases.TypeMappings;
 
 namespace EasySql.Infrastructure
 {
     public class ColunmnDefintion
     {
-        public ColunmnDefintion(Type type, string name, bool isKey, bool isNullable, int? length, ITypeMapping mapping)
+        public ColunmnDefintion(MemberInfo member, Type clrType, string name, bool isKey, bool isNullable, int? length, ITypeMapping mapping)
         {
-            Type = type;
+            Member = member;
+            ClrType = clrType;
             Name = name;
             IsKey = isKey;
             IsNullable = isNullable;
@@ -15,7 +17,8 @@ namespace EasySql.Infrastructure
             Mapping = mapping;
         }
 
-        public Type Type { get; }
+        public MemberInfo Member { get; set; }
+        public Type ClrType { get; }
         public string Name { get; }
         public bool IsKey { get; }
         public bool IsNullable { get; }

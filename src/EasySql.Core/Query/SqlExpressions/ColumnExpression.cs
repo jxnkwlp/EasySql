@@ -1,16 +1,26 @@
-﻿namespace EasySql.Query.SqlExpressions
+﻿using EasySql.Infrastructure;
+
+namespace EasySql.Query.SqlExpressions
 {
     public class ColumnExpression : SqlExpression
     {
-        public ColumnExpression(string alias, string name)
+        public string Name { get; }
+        public string Alias { get; }
+        public string TableAlias { get; }
+        public ColunmnDefintion Colunmn { get; }
+
+        public ColumnExpression(ColunmnDefintion colunmn, string alias, string tableAlias) : this(colunmn.Name, alias, tableAlias, colunmn)
         {
             Alias = alias;
-            Name = name;
+            TableAlias = tableAlias;
         }
 
-        public string Alias { get; }
-
-        public string Name { get; }
-
+        public ColumnExpression(string name, string alias, string tableAlias, ColunmnDefintion colunmn)
+        {
+            Name = name;
+            Alias = alias;
+            TableAlias = tableAlias;
+            Colunmn = colunmn;
+        }
     }
 }

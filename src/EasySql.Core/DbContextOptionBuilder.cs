@@ -1,4 +1,5 @@
 ﻿using System;
+using EasySql.Databases;
 using EasySql.DependencyInjection;
 using EasySql.Infrastructure;
 
@@ -22,6 +23,7 @@ namespace EasySql
         {
             _serviceRegistor.AddService<IEntityConfiguration, EntityConfiguration>();
             _serviceRegistor.AddService<IEntityConfigurationLoader, EntityConfigurationLoader>();
+            _serviceRegistor.AddService<ISqlGenerationHelper, SqlGenerationHelper>(true);
 
             return this;
         }

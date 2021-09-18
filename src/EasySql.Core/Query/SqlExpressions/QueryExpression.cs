@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using EasySql.Infrastructure;
 
 namespace EasySql.Query.SqlExpressions
 {
@@ -42,6 +43,16 @@ namespace EasySql.Query.SqlExpressions
         public void SetTable(TableExpression table)
         {
             Table = table;
+        }
+
+        public void SetTable(EntityDefintion entity)
+        {
+            Table = new TableExpression(entity, entity.Name.Substring(0, 1).ToLower());
+
+            foreach (var item in entity.Colunmns)
+            {
+                AddProjection(new ColumnExpression(item, null, Table.Alias));
+            }
         }
 
         public void ClearProjections()
