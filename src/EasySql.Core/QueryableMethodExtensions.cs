@@ -14,9 +14,11 @@ namespace EasySql
         {
             if (quable.Provider is EntityQueryProvider entityQueryProvider)
             {
-                var sqlExpression = new QueryTranslator(entityQueryProvider.QueryContext).Translate(quable.Expression);
+                var queryContext = entityQueryProvider.QueryContext;
 
-                var commandBuilder = new SqlTranslator().Translate(sqlExpression);
+                var sqlExpression = new QueryTranslator(queryContext).Translate(quable.Expression);
+
+                var commandBuilder = new SqlTranslator(queryContext).Translate(sqlExpression);
 
                 var command = commandBuilder.Build();
 

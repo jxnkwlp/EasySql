@@ -24,7 +24,7 @@ namespace EasySql.Query
         {
             var sqlExpression = new QueryTranslator(_queryContext).Translate(expression);
 
-            var commandBuilder = new SqlTranslator().Translate(sqlExpression);
+            var commandBuilder = new SqlTranslator(_queryContext).Translate(sqlExpression);
 
             var command = commandBuilder.Build();
 

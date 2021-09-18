@@ -83,7 +83,7 @@ namespace EasySql.Infrastructure
                 throw new Exception($"The type '{propertyInfo.Name}' mapping not found.");
             }
 
-            return new ColunmnDefintion(propertyInfo.PropertyType, name, isKey, isNullable, maxLength, mapping);
+            return new ColunmnDefintion(propertyInfo, propertyInfo.PropertyType, name, isKey, isNullable, maxLength, mapping);
         }
     }
 }
