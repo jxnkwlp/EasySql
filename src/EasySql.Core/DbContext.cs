@@ -28,9 +28,9 @@ namespace EasySql
 
         public DbContextOptions Options { get; }
 
-        private IQueryExecutor CreateQueryExecutor()
+        private IQueryExecutor CreateQueryExecutor(QueryContext queryContext)
         {
-            return new QueryExecutor(Options, GetRequiredService<IEntityConfiguration>());
+            return new QueryExecutor(queryContext);
         }
 
         public IEntityQueryable<T> Query<T>() where T : class
@@ -39,9 +39,11 @@ namespace EasySql
 
             var entityType = entityConfiguration.RegisterEntity(typeof(T));
 
-            var queryExecutor = CreateQueryExecutor();
+            var queryContext = new QueryContext(Options);
 
-            var queryProvider = new EntityQueryProvider(queryExecutor);
+            var queryExecutor = CreateQueryExecutor(queryContext);
+
+            var queryProvider = new EntityQueryProvider(queryExecutor, queryContext);
 
             return new EntityQueryable<T>(queryProvider, new EntityQueryExpression(entityType));
         }

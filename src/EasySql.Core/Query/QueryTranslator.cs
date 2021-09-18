@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using EasySql.Infrastructure;
 using EasySql.Query.SqlExpressions;
 
 namespace EasySql.Query
@@ -10,11 +9,11 @@ namespace EasySql.Query
     {
         private readonly QueryExpression _queryExpression = new QueryExpression();
 
-        private readonly IEntityConfiguration _entityConfiguration;
+        private readonly QueryContext _queryContext;
 
-        public QueryTranslator(IEntityConfiguration entityConfiguration)
+        public QueryTranslator(QueryContext queryContext)
         {
-            _entityConfiguration = entityConfiguration;
+            _queryContext = queryContext;
         }
 
         public SqlExpression Translate(Expression expression)

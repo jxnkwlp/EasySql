@@ -1,4 +1,5 @@
 ﻿using System;
+using EasySql.DependencyInjection;
 
 namespace EasySql.Infrastructure
 {
@@ -9,6 +10,11 @@ namespace EasySql.Infrastructure
             if (Nullable.GetUnderlyingType(type) != null)
                 return Nullable.GetUnderlyingType(type);
             return type;
+        }
+
+        public static T GetRequiredService<T>(this DbContextOptions options) where T : class
+        {
+            return options.ServiceProvider.GetRequiredService<T>();
         }
     }
 }
