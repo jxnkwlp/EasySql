@@ -22,17 +22,26 @@ namespace EasySql.Query
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var sqlExpression = new QueryTranslator(_queryContext).Translate(expression);
-
-            var commandBuilder = new SqlTranslator(_queryContext).Translate(sqlExpression);
-
-            var command = commandBuilder.Build();
+            var command = ToDatabaseCommand(expression);
 
             IDatabase database = new Database();
 
             var connection = _databaseConnectionFactory.Create(_queryContext.Options);
 
             return database.Execute<TResult>(command, new DatabaseCommandContext(connection));
+        }
+
+        internal IDatabaseCommand ToDatabaseCommand(Expression expression)
+        {
+            expression = new QueryExpressionRewriteVisitor().Visit(expression);
+
+            var sqlExpression = new QueryTranslator(_queryContext).Translate(expression);
+
+            var commandBuilder = new SqlTranslator(_queryContext).Translate(sqlExpression);
+
+            var command = commandBuilder.Build();
+
+            return command;
         }
 
     }

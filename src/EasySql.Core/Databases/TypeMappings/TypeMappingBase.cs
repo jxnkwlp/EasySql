@@ -23,5 +23,15 @@ namespace EasySql.Databases.TypeMappings
         public virtual int? Precision { get; }
 
         public virtual bool FixedLength { get; }
+
+        public virtual string GetConstantLiteral(object value)
+        {
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            return value.ToString();
+        }
     }
 }

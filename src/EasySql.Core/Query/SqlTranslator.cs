@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using EasySql.Databases;
+using EasySql.Databases.TypeMappings;
 using EasySql.Infrastructure;
 using EasySql.Query.SqlExpressions;
 
@@ -34,10 +35,12 @@ namespace EasySql.Query
         protected virtual string AliasSeparator { get; } = " AS ";
 
         private readonly ISqlGenerationHelper _sqlGenerationHelper;
+        private readonly ITypeMappingConfiguration _typeMappingConfiguration;
 
         public SqlTranslator(QueryContext queryContext)
         {
             _sqlGenerationHelper = queryContext.Options.GetRequiredService<ISqlGenerationHelper>();
+            _typeMappingConfiguration = queryContext.Options.GetRequiredService<ITypeMappingConfiguration>();
         }
 
         public ISqlCommandBuilder Translate(SqlExpression expression)
@@ -193,8 +196,15 @@ namespace EasySql.Query
 
         protected virtual Expression VisitSqlConstant(SqlConstantExpression expression)
         {
-            _sqlCommandBuilder.Append(expression.Value.ToString());
+            if (expression.Type == null)
+                _sqlCommandBuilder.Append("NULL ");
+            else
+            {
+                var mappings = _typeMappingConfiguration.FindMapping(expression.Type);
 
+                _sqlCommandBuilder.Append(mappings.GetConstantLiteral(expression.Value));
+
+            }
             return expression;
         }
 
