@@ -21,6 +21,11 @@ namespace EasySql.Databases
 
         public ISqlCommandBuilder Append(string value)
         {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new System.ArgumentException($"'{nameof(value)}' cannot be null or whitespace.", nameof(value));
+            }
+
             _sb.Append(value);
             return this;
         }

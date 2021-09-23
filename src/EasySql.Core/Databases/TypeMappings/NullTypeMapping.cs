@@ -14,5 +14,10 @@ namespace EasySql.Databases.TypeMappings
         public int? Precision { get; }
 
         public bool FixedLength { get; }
+
+        public string GetConstantLiteral(object value)
+        {
+            return "NULL";
+        }
     }
 }

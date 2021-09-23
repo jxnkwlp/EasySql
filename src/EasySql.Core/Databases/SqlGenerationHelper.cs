@@ -6,29 +6,29 @@ namespace EasySql.Databases
 {
     public class SqlGenerationHelper : ISqlGenerationHelper
     {
-        public string StatementTerminator => ";";
+        public virtual string StatementTerminator => ";";
 
-        public string BatchTerminator => Environment.NewLine;
+        public virtual string BatchTerminator => Environment.NewLine;
 
-        public string StartTransactionStatement => "START TRANSACTION" + StatementTerminator;
+        public virtual string StartTransactionStatement => "START TRANSACTION" + StatementTerminator;
 
-        public string CommitTransactionStatement => "COMMIT" + StatementTerminator;
+        public virtual string CommitTransactionStatement => "COMMIT" + StatementTerminator;
 
-        public string SingleLineCommentToken => "--";
+        public virtual string SingleLineCommentToken => "--";
 
-        public string DelimitIdentifier(string identifier)
+        public virtual string DelimitIdentifier(string identifier)
         {
             return $"\"{EscapeIdentifier(identifier)}\""; // Interpolation okay; strings
         }
 
-        public void DelimitIdentifier(StringBuilder builder, string identifier)
+        public virtual void DelimitIdentifier(StringBuilder builder, string identifier)
         {
             builder.Append('"');
             EscapeIdentifier(builder, identifier);
             builder.Append('"');
         }
 
-        public string DelimitIdentifier(string name, string schema)
+        public virtual string DelimitIdentifier(string name, string schema)
         {
             return (!string.IsNullOrEmpty(schema)
                      ? DelimitIdentifier(schema) + "."
@@ -36,7 +36,7 @@ namespace EasySql.Databases
                  + DelimitIdentifier(name);
         }
 
-        public void DelimitIdentifier(StringBuilder builder, string name, string schema)
+        public virtual void DelimitIdentifier(StringBuilder builder, string name, string schema)
         {
             if (!string.IsNullOrEmpty(schema))
             {
@@ -47,7 +47,7 @@ namespace EasySql.Databases
             DelimitIdentifier(builder, name);
         }
 
-        public string GenerateComment(string text)
+        public virtual string GenerateComment(string text)
         {
             var builder = new StringBuilder();
             using (var reader = new StringReader(text))
@@ -62,39 +62,39 @@ namespace EasySql.Databases
             return builder.ToString();
         }
 
-        public string GenerateCreateSavepointStatement(string name)
+        public virtual string GenerateCreateSavepointStatement(string name)
         {
             return "SAVEPOINT " + DelimitIdentifier(name) + StatementTerminator;
         }
 
-        public string GenerateParameterName(string name)
+        public virtual string GenerateParameterName(string name)
         {
             return name.StartsWith("@", StringComparison.Ordinal)
                 ? name
                 : "@" + name;
         }
 
-        public void GenerateParameterName(StringBuilder builder, string name)
+        public virtual void GenerateParameterName(StringBuilder builder, string name)
         {
             builder.Append('@').Append(name);
         }
 
-        public string GenerateParameterNamePlaceholder(string name)
+        public virtual string GenerateParameterNamePlaceholder(string name)
         {
             return GenerateParameterName(name);
         }
 
-        public void GenerateParameterNamePlaceholder(StringBuilder builder, string name)
+        public virtual void GenerateParameterNamePlaceholder(StringBuilder builder, string name)
         {
             GenerateParameterName(builder, name);
         }
 
-        public string GenerateReleaseSavepointStatement(string name)
+        public virtual string GenerateReleaseSavepointStatement(string name)
         {
             return "RELEASE SAVEPOINT " + DelimitIdentifier(name) + StatementTerminator;
         }
 
-        public string GenerateRollbackToSavepointStatement(string name)
+        public virtual string GenerateRollbackToSavepointStatement(string name)
         {
             return "ROLLBACK TO " + DelimitIdentifier(name) + StatementTerminator;
         }

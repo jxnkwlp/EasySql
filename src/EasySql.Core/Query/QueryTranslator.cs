@@ -17,7 +17,6 @@ namespace EasySql.Query
         {
             _queryContext = queryContext;
             _entityConfiguration = queryContext.Options.GetRequiredService<IEntityConfiguration>();
-
         }
 
         public SqlExpression Translate(Expression expression)
@@ -286,11 +285,23 @@ namespace EasySql.Query
 
         protected virtual Expression TranslateWhere(LambdaExpression node)
         {
-            var result = Visit(node.Body);
+            // rewrite 
+            if (node.Body is MemberExpression memberExpression)
+            {
+                var result = new SqlBinaryExpression(Visit(memberExpression), new SqlConstantExpression(true), ExpressionType.Equal);
 
-            _queryExpression.ApplyPredicate(result);
+                _queryExpression.ApplyPredicate(result);
 
-            return node;
+                return node;
+            }
+            else
+            {
+                var result = Visit(node.Body);
+
+                _queryExpression.ApplyPredicate(result);
+
+                return node;
+            }
         }
 
         protected virtual Expression TranslateAll(LambdaExpression node = null)

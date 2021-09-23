@@ -5,5 +5,10 @@
         public StringTypeMapping() : base(typeof(string), System.Data.DbType.String)
         {
         }
+
+        public override string GetConstantLiteral(object value)
+        {
+            return $"'{value}'";
+        }
     }
 }

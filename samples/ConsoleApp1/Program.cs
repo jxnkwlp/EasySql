@@ -30,9 +30,14 @@ namespace ConsoleApp1
             var query = dbContext.Query<Order>();
             var query2 = dbContext.Query<Product>();
 
+            var now = DateTime.Now;
 
-            // Console.WriteLine(query.Where(x => x.Id>10).ToSqlText());
-            Console.WriteLine(query2.Where(x => x.Published == true).ToSqlText());
+            // Console.WriteLine(query.Where(x => x.ShipName == null).ToSqlText());
+            Console.WriteLine(query.Where(x => x.ShipName != "a").ToSqlText());
+            Console.WriteLine(query.Where(x => x.Id > 10).ToSqlText());
+            // Console.WriteLine(query2.Where(x => x.Discontinued == true).ToSqlText());
+            Console.WriteLine(query2.Where(x => x.Discontinued).ToSqlText());
+            // Console.WriteLine(query.Where(x => x.RequiredDate != null && x.RequiredDate > now).ToSqlText());
 
             // query.Where(x => x.Id <= 10).ToList();
             // query.Where(x => (x.Id <= 10 || x.Id > 30) && x.Age > 50).ToList();
@@ -60,6 +65,8 @@ namespace ConsoleApp1
 
             // query.GroupBy(x => x.Name).ToList();
             // query.GroupBy(x => new { x.CustomerID, x.EmployeeID }).Select(x => new { a = x.Key, b = x.Max(c => c.OrderDate) }).ToList();
+
+
         }
     }
 
@@ -90,6 +97,5 @@ namespace ConsoleApp1
         public int ProductID { get; set; }
         public string ProductName { get; set; }
         public bool Discontinued { get; set; }
-        public bool Published { get; set; }
     }
 }

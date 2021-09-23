@@ -12,6 +12,7 @@ namespace EasySql.SqlServer
 
             builder.ReplaceService<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
             builder.ReplaceService<ITypeMappingConfiguration, SqlServerTypeMappingConfiguration>();
+            builder.ReplaceService<ISqlGenerationHelper, SqlServerSqlGenerationHelper>();
 
             return builder;
         }
