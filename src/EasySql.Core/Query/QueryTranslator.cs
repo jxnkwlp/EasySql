@@ -231,6 +231,11 @@ namespace EasySql.Query
                 return new SqlUnaryExpression(o, node.NodeType, node.Type);
             }
 
+            if (node.NodeType == ExpressionType.Convert)
+            {
+                return Visit(node.Operand);
+            }
+
             return node;
         }
 

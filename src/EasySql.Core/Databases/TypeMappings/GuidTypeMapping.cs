@@ -7,5 +7,10 @@ namespace EasySql.Databases.TypeMappings
         public GuidTypeMapping() : base(typeof(Guid), System.Data.DbType.Guid)
         {
         }
+
+        public override string GetConstantLiteral(object value)
+        {
+            return $"'{value}'";
+        }
     }
 }
