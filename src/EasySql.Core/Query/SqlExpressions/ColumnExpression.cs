@@ -7,20 +7,17 @@ namespace EasySql.Query.SqlExpressions
         public string Name { get; }
         public string Alias { get; }
         public string TableAlias { get; }
+        public bool IsNullable { get; }
         public ColunmnDefintion Colunmn { get; }
 
-        public ColumnExpression(ColunmnDefintion colunmn, string alias, string tableAlias) : this(colunmn.Name, alias, tableAlias, colunmn)
+        public ColumnExpression(ColunmnDefintion colunmn, string alias, string tableAlias)
         {
+            Colunmn = colunmn;
             Alias = alias;
             TableAlias = tableAlias;
+            Name = colunmn.Name;
+            IsNullable = colunmn.IsNullable;
         }
 
-        public ColumnExpression(string name, string alias, string tableAlias, ColunmnDefintion colunmn)
-        {
-            Name = name;
-            Alias = alias;
-            TableAlias = tableAlias;
-            Colunmn = colunmn;
-        }
     }
 }

@@ -10,6 +10,7 @@ namespace ConsoleApp1
 {
     internal class Program
     {
+
         private static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
@@ -29,15 +30,14 @@ namespace ConsoleApp1
 
             var query = dbContext.Query<Order>();
             var query2 = dbContext.Query<Product>();
-
             var now = DateTime.Now;
 
             // Console.WriteLine(query.Where(x => x.ShipName == null).ToSqlText());
-            Console.WriteLine(query.Where(x => x.ShipName != "a").ToSqlText());
-            Console.WriteLine(query.Where(x => x.Id > 10).ToSqlText());
+            // Console.WriteLine(query.Where(x => x.ShipName != "a").ToSqlText());
+            //  Console.WriteLine(query.Where(x => x.Id > p1).ToSqlText());
             // Console.WriteLine(query2.Where(x => x.Discontinued == true).ToSqlText());
-            Console.WriteLine(query2.Where(x => x.Discontinued).ToSqlText());
-            // Console.WriteLine(query.Where(x => x.RequiredDate != null && x.RequiredDate > now).ToSqlText());
+            // Console.WriteLine(query2.Where(x => x.Discontinued).ToSqlText());
+            Console.WriteLine(query.Where(x => x.RequiredDate >= now && x.CustomerID != null).ToSqlText());
 
             // query.Where(x => x.Id <= 10).ToList();
             // query.Where(x => (x.Id <= 10 || x.Id > 30) && x.Age > 50).ToList();

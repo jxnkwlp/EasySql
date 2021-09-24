@@ -4,7 +4,6 @@
     {
         public DecimalTypeMapping() : base(typeof(decimal), System.Data.DbType.Decimal)
         {
-
         }
     }
 }

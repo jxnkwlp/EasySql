@@ -9,7 +9,7 @@ TODO
 ## Roadmap
 
 Version 1.0
-- [ ]  Table/Column mapping 
+- [x]  Table/Column mapping 
 - [ ]  Type mapping
 - [ ]  Group by method
 - [ ]  Join method

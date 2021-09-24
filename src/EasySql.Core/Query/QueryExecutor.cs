@@ -1,8 +1,11 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using EasySql.Databases;
 using EasySql.DependencyInjection;
 using EasySql.Infrastructure;
+using EasySql.Query.SqlExpressions;
 
+[assembly: InternalsVisibleTo("EasySql.Tests")]
 namespace EasySql.Query
 {
     public class QueryExecutor : IQueryExecutor
@@ -33,15 +36,20 @@ namespace EasySql.Query
 
         internal IDatabaseCommand ToDatabaseCommand(Expression expression)
         {
-            expression = new QueryExpressionRewriteVisitor().Visit(expression);
-
-            var sqlExpression = new QueryTranslator(_queryContext).Translate(expression);
+            var sqlExpression = Translate(expression) as SqlExpression;
 
             var commandBuilder = new SqlTranslator(_queryContext).Translate(sqlExpression);
 
             var command = commandBuilder.Build();
 
             return command;
+        }
+
+        internal Expression Translate(Expression expression)
+        {
+            expression = new QueryExpressionRewriteVisitor().Visit(expression);
+
+            return new QueryTranslator(_queryContext).Translate(expression);
         }
 
     }
