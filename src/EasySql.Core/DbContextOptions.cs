@@ -10,6 +10,13 @@ namespace EasySql
 
         public IDatabaseProvider DatabaseProvider { get; private set; }
 
+        private readonly DbContextOptionBuilder _optionBuilder;
+
+        public DbContextOptions(DbContextOptionBuilder optionBuilder)
+        {
+            _optionBuilder = optionBuilder;
+        }
+
         public void SetServiceProvider(IServiceProvider provider)
         {
             if (provider == null)

@@ -4,8 +4,8 @@ namespace EasySql.Infrastructure
 {
     public interface IEntityConfiguration
     {
-        EntityDefintion RegisterEntity(Type type);
+        EntityDefintion Register(Type type);
 
-        EntityDefintion FindEntity(Type type);
+        EntityDefintion Find(Type type);
     }
 }

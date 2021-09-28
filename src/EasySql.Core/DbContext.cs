@@ -1,13 +1,15 @@
 ﻿using System;
-using EasySql.DependencyInjection;
 using EasySql.Infrastructure;
 using EasySql.Query;
 using EasySql.Query.SqlExpressions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EasySql
 {
     public class DbContext : IDbContext
     {
+        public DbContextOptions Options { get; }
+
         public DbContext(DbContextOptions options)
         {
             Options = options;
@@ -15,18 +17,20 @@ namespace EasySql
 
         public DbContext(Action<DbContextOptionBuilder> builderAction = null)
         {
-            var di = new InnerDI();
+            var services = new ServiceCollection();
 
-            var builder = new DbContextOptionBuilder(di);
-
-            builder.UseServiceProvider(di);
+            var builder = new DbContextOptionBuilder(services);
 
             builderAction?.Invoke(builder);
 
-            Options = builder.Options;
+            builder.UseInnerServiceProvider();
+
+            Options = builder.Build();
         }
 
-        public DbContextOptions Options { get; }
+        //protected virtual void ConfigureServices(DbContextOptionBuilder optionBuilder)
+        //{ 
+        //}
 
         private IQueryExecutor CreateQueryExecutor(QueryContext queryContext)
         {
@@ -37,7 +41,7 @@ namespace EasySql
         {
             var entityConfiguration = Options.ServiceProvider.GetRequiredService<IEntityConfiguration>();
 
-            var entityType = entityConfiguration.RegisterEntity(typeof(T));
+            var entityType = entityConfiguration.Register(typeof(T));
 
             var queryContext = new QueryContext(Options);
 
