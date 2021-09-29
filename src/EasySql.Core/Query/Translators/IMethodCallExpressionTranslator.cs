@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace EasySql.Query
+namespace EasySql.Query.Translators
 {
-    public interface IQueryableMethodTranslator
+    public interface IMethodCallExpressionTranslator
     {
         Expression Translate(ExpressionVisitor visitor, MethodCallExpression expression);
     }

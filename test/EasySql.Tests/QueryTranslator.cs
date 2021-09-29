@@ -28,7 +28,7 @@ namespace EasySql.Tests
             {
                 var queryContext = entityQueryProvider.QueryContext;
 
-                var executor = new QueryExecutor(queryContext);
+                var executor = new QueryExecutor(queryContext, queryContext.LoggerFactory);
 
                 return executor.Translate(queryable.Expression) as QueryExpression;
             }

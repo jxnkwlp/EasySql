@@ -3,12 +3,15 @@ using EasySql.Infrastructure;
 using EasySql.Query;
 using EasySql.Query.SqlExpressions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EasySql
 {
     public class DbContext : IDbContext
     {
         public DbContextOptions Options { get; }
+
+        public ILoggerFactory LoggerFactory => Options.GetRequiredService<ILoggerFactory>();
 
         public DbContext(DbContextOptions options)
         {
@@ -32,9 +35,9 @@ namespace EasySql
         //{ 
         //}
 
-        private IQueryExecutor CreateQueryExecutor(QueryContext queryContext)
+        private IQueryExecutor CreateQueryExecutor()
         {
-            return new QueryExecutor(queryContext);
+            return new QueryExecutor(Options);
         }
 
         public IEntityQueryable<T> Query<T>() where T : class
@@ -43,11 +46,9 @@ namespace EasySql
 
             var entityType = entityConfiguration.Register(typeof(T));
 
-            var queryContext = new QueryContext(Options);
+            var queryExecutor = CreateQueryExecutor();
 
-            var queryExecutor = CreateQueryExecutor(queryContext);
-
-            var queryProvider = new EntityQueryProvider(queryExecutor, queryContext);
+            var queryProvider = new EntityQueryProvider(queryExecutor);
 
             return new EntityQueryable<T>(queryProvider, new EntityQueryExpression(entityType));
         }

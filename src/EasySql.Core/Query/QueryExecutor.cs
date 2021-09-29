@@ -1,55 +1,58 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using EasySql.Databases;
-using EasySql.DependencyInjection;
 using EasySql.Infrastructure;
 using EasySql.Query.SqlExpressions;
+using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("EasySql.Tests")]
 namespace EasySql.Query
 {
     public class QueryExecutor : IQueryExecutor
     {
+        private readonly DbContextOptions _options;
+
         //public static readonly ParameterExpression QueryContextParameter = Expression.Parameter(typeof(QueryExecutor), "QueryExecutor");
 
-        private readonly QueryContext _queryContext;
-        private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
-        private readonly IEntityConfiguration _entityConfiguration;
-
-        public QueryExecutor(QueryContext queryContext)
+        public QueryExecutor(DbContextOptions options)
         {
-            _queryContext = queryContext;
-            _databaseConnectionFactory = queryContext.Options.GetRequiredService<IDatabaseConnectionFactory>();
-            _entityConfiguration = queryContext.Options.GetRequiredService<IEntityConfiguration>();
+            _options = options;
+
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var command = ToDatabaseCommand(expression);
+            var scope = _options.ServiceProvider.CreateScope();
 
-            IDatabase database = new Database();
+            var queryContextFactory = scope.ServiceProvider.GetRequiredService<IQueryContextFactory>();
 
-            var connection = _databaseConnectionFactory.Create(_queryContext.Options);
+            var context = queryContextFactory.Create(_options);
+
+            var command = ToDatabaseCommand(context, expression);
+
+            IDatabase database = context.Database;
+
+            var connection = context.DatabaseConnectionFactory.Create(context.Options);
 
             return database.Execute<TResult>(command, new DatabaseCommandContext(connection));
         }
 
-        internal IDatabaseCommand ToDatabaseCommand(Expression expression)
+        internal IDatabaseCommand ToDatabaseCommand(QueryContext queryContext, Expression expression)
         {
-            var sqlExpression = Translate(expression) as SqlExpression;
+            var sqlExpression = Translate(queryContext, expression) as QueryExpression;
 
-            var commandBuilder = new SqlTranslator(_queryContext).Translate(sqlExpression);
+            var commandBuilder = new SqlTranslator(queryContext).Translate(sqlExpression);
 
             var command = commandBuilder.Build();
 
             return command;
         }
 
-        internal Expression Translate(Expression expression)
+        internal Expression Translate(QueryContext queryContext, Expression expression)
         {
             expression = new QueryExpressionRewriteVisitor().Visit(expression);
 
-            return new QueryTranslator(_queryContext).Translate(expression);
+            return new QueryTranslator(queryContext).Translate(expression);
         }
 
     }

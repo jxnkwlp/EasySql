@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using EasySql.Query;
 
 namespace EasySql
 {
@@ -10,16 +9,17 @@ namespace EasySql
         ///  Dump current queryable expression to sql
         /// </summary> 
         /// <exception cref="InvalidOperationException"></exception>
+        [Obsolete]
         public static string ToSqlText<T>(this IQueryable<T> quable)
         {
-            if (quable.Provider is EntityQueryProvider entityQueryProvider)
-            {
-                var queryContext = entityQueryProvider.QueryContext;
+            //if (quable.Provider is EntityQueryProvider entityQueryProvider)
+            //{
+            //    var queryContext = entityQueryProvider.QueryContext;
 
-                var command = new QueryExecutor(queryContext).ToDatabaseCommand(quable.Expression);
+            //    var command = new QueryExecutor(queryContext).ToDatabaseCommand(quable.Expression);
 
-                return command.CommandText;
-            }
+            //    return command.CommandText;
+            //}
 
             throw new InvalidOperationException("The queryable can't use this method.");
         }

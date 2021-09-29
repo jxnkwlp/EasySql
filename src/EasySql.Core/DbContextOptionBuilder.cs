@@ -26,6 +26,10 @@ namespace EasySql
 
         internal DbContextOptionBuilder RegisterCoreServices()
         {
+            Services.AddLogging();
+
+            Services.AddTransient<IQueryContextFactory, QueryContextFactory>();
+
             Services.AddSingleton<IEntityConfiguration, EntityConfiguration>();
             Services.AddSingleton<IEntityConfigurationLoader, EntityConfigurationLoader>();
             Services.AddSingleton<ITypeMappingConfiguration, TypeMappingConfiguration>();
@@ -34,8 +38,12 @@ namespace EasySql
 
             Services.AddTransient<IQueryableMethodTranslator, QueryableMethodTranslator>();
 
-            Services.AddSingleton<IMethodCallExpressionTranslator, StringContainsMethodCallExpressionTranslator>();
-            Services.AddSingleton<IMethodCallExpressionTranslator, StringEqualsMethodCallExpressionTranslator>();
+            Services.AddTransient<ISqlCommandBuilder, SqlCommandBuilder>();
+
+            Services.AddTransient<IDatabase, Database>();
+
+            Services.AddSingleton<IMethodCallExpressionTranslator, StringMethodCallExpressionTranslator>();
+            Services.AddSingleton<IMethodCallExpressionTranslator, DateTimeMethodCallExpressionTranslator>();
 
             return this;
         }
@@ -74,6 +82,11 @@ namespace EasySql
 
             return this;
         }
+
+        //public DbContextOptionBuilder LogTo(Action<string> write)
+        //{
+        //    return this;
+        //}
 
         public DbContextOptions Build()
         {

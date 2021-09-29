@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace EasySql.Query.SqlExpressions
 {
@@ -11,6 +12,11 @@ namespace EasySql.Query.SqlExpressions
         public SqlConstantExpression(object value)
         {
             Value = value;
+        }
+
+        public Expression Update(object value)
+        {
+            return value == Value ? this : new SqlConstantExpression(value);
         }
 
         public string GetConstantLiteralString()
