@@ -2,20 +2,24 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
+using EasySql.Query;
 
 namespace EasySql.Databases
 {
     public class DatabaseCommand : IDatabaseCommand
     {
-        public DatabaseCommand(string commandText, IReadOnlyList<ISqlCommandParameter> parameters)
+        public DatabaseCommand(string commandText, IReadOnlyList<ISqlCommandParameter> parameters, QueryResultType resultType)
         {
             CommandText = commandText;
             Parameters = parameters;
+            ResultType = resultType;
         }
 
         public string CommandText { get; }
 
         public IReadOnlyList<ISqlCommandParameter> Parameters { get; }
+
+        public QueryResultType ResultType { get; }
 
         public int ExecuteNonQuery(DatabaseCommandContext context)
         {

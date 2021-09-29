@@ -18,6 +18,8 @@ namespace EasySql.Query.SqlExpressions
 
         public string Alias { get; set; }
 
+        public QueryResultType ResultType { get; private set; } = QueryResultType.Enumerable;
+
         public QueryExpression()
         {
             Orderings = new List<OrderingExpression>();
@@ -81,6 +83,11 @@ namespace EasySql.Query.SqlExpressions
         public void AddGrouping(SqlExpression expression)
         {
             GroupBy.Add(expression);
+        }
+
+        public void ChangeResultType(QueryResultType resultType)
+        {
+            ResultType = resultType;
         }
     }
 }

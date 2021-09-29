@@ -7,17 +7,13 @@ namespace EasySql.Query
 {
     public class EntityQueryProvider : IQueryProvider
     {
-        public QueryContext QueryContext { get; }
-
-
         private readonly MethodInfo _genericCreateQueryMethod;
         private readonly MethodInfo _genericExecuteMethod;
 
         private readonly IQueryExecutor _queryExecutor;
 
-        public EntityQueryProvider(IQueryExecutor queryExecutor, QueryContext queryContext)
+        public EntityQueryProvider(IQueryExecutor queryExecutor)
         {
-            QueryContext = queryContext;
             _queryExecutor = queryExecutor;
 
             _genericCreateQueryMethod = typeof(EntityQueryProvider)

@@ -1,50 +1,100 @@
 ﻿using System;
 using EasySql.Databases;
-using EasySql.DependencyInjection;
+using EasySql.Databases.TypeMappings;
 using EasySql.Infrastructure;
+using EasySql.Query;
+using EasySql.Query.Translators;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EasySql
 {
     public class DbContextOptionBuilder
     {
-        private readonly DbContextOptions _options = new DbContextOptions();
-        private readonly IServiceRegistor _serviceRegistor;
+        private readonly DbContextOptions _options = null;
 
-        public DbContextOptions Options => _options;
+        public IServiceCollection Services { get; }
 
-        public DbContextOptionBuilder(IServiceRegistor serviceRegistor)
+        public DbContextOptionBuilder(IServiceCollection services)
         {
-            _serviceRegistor = serviceRegistor;
+            _options = new DbContextOptions(this);
+
+            Services = services;
 
             RegisterCoreServices();
         }
 
         internal DbContextOptionBuilder RegisterCoreServices()
         {
-            _serviceRegistor.AddService<IEntityConfiguration, EntityConfiguration>();
-            _serviceRegistor.AddService<IEntityConfigurationLoader, EntityConfigurationLoader>();
-            _serviceRegistor.AddService<ISqlGenerationHelper, SqlGenerationHelper>(true);
+            Services.AddLogging();
+
+            Services.AddTransient<IQueryContextFactory, QueryContextFactory>();
+
+            Services.AddSingleton<IEntityConfiguration, EntityConfiguration>();
+            Services.AddSingleton<IEntityConfigurationLoader, EntityConfigurationLoader>();
+            Services.AddSingleton<ITypeMappingConfiguration, TypeMappingConfiguration>();
+
+            Services.AddSingleton<ISqlGenerationHelper, SqlGenerationHelper>();
+
+            Services.AddTransient<IQueryableMethodTranslator, QueryableMethodTranslator>();
+
+            Services.AddTransient<ISqlCommandBuilder, SqlCommandBuilder>();
+
+            Services.AddTransient<IDatabase, Database>();
+
+            Services.AddSingleton<IMethodCallExpressionTranslator, StringMethodCallExpressionTranslator>();
+            Services.AddSingleton<IMethodCallExpressionTranslator, DateTimeMethodCallExpressionTranslator>();
 
             return this;
         }
 
         public DbContextOptionBuilder UseServiceProvider(IServiceProvider serviceProvider)
         {
-            Options.SetServiceProvider(serviceProvider);
+            _options.SetServiceProvider(serviceProvider);
 
             return this;
         }
 
-        public DbContextOptionBuilder ReplaceService<T, TImpl>() where T : class where TImpl : class, T
+        internal DbContextOptionBuilder UseInnerServiceProvider()
         {
-            _serviceRegistor.AddService<T, TImpl>();
+            _options.SetServiceProvider(Services.BuildServiceProvider(true));
 
             return this;
+        }
+
+        public DbContextOptionBuilder ReplaceService(ServiceDescriptor serviceDescriptor)
+        {
+            Services.Replace(serviceDescriptor);
+
+            return this;
+        }
+
+        public DbContextOptionBuilder AddService(ServiceDescriptor serviceDescriptor)
+        {
+            Services.Add(serviceDescriptor);
+
+            return this;
+        }
+
+        public DbContextOptionBuilder SetDatabaseProvider(IDatabaseProvider databaseProvider)
+        {
+            _options.SetDatabaseProvider(databaseProvider);
+
+            return this;
+        }
+
+        //public DbContextOptionBuilder LogTo(Action<string> write)
+        //{
+        //    return this;
+        //}
+
+        public DbContextOptions Build()
+        {
+            return _options;
         }
 
         internal void ValidateOptions()
         {
-
         }
     }
 }

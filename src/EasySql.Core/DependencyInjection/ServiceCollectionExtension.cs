@@ -1,5 +1,4 @@
-﻿#if !NET461
-using System;
+﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EasySql.DependencyInjection
@@ -13,7 +12,7 @@ namespace EasySql.DependencyInjection
 
         public static IServiceCollection AddDbContext<T>(this IServiceCollection services, Action<DbContextOptionBuilder> builderAction = null) where T : DbContext
         {
-            var builder = new DbContextOptionBuilder(new MicrosoftExtensionsDependencyInjectionServiceRegistor(services));
+            var builder = new DbContextOptionBuilder(services);
 
             builderAction?.Invoke(builder);
 
@@ -21,51 +20,13 @@ namespace EasySql.DependencyInjection
             {
                 builder.UseServiceProvider(p);
 
-                return Activator.CreateInstance(typeof(T), builder.Options) as DbContext;
+                var dbcontext = Activator.CreateInstance(typeof(T), builder.Build()) as DbContext;
+
+                return dbcontext;
             });
 
             return services;
         }
 
     }
-
-    public class MicrosoftExtensionsDependencyInjectionServiceRegistor : IServiceRegistor
-    {
-        private readonly IServiceCollection _services;
-
-        public MicrosoftExtensionsDependencyInjectionServiceRegistor()
-        {
-        }
-
-        public MicrosoftExtensionsDependencyInjectionServiceRegistor(IServiceCollection services)
-        {
-            _services = services;
-        }
-
-        public void AddService<T>(bool isSingleton = false) where T : class
-        {
-            if (isSingleton)
-                _services.AddSingleton<T>();
-            else
-                _services.AddTransient<T>();
-        }
-
-        public void AddService<T>(Func<T> instanceFactory, bool isSingleton = false) where T : class
-        {
-            if (isSingleton)
-                _services.AddSingleton<T>((_) => instanceFactory());
-            else
-                _services.AddTransient<T>((_) => instanceFactory());
-        }
-
-        public void AddService<T, TImpl>(bool isSingleton) where T : class where TImpl : class, T
-        {
-            if (isSingleton)
-                _services.AddSingleton<T, TImpl>();
-            else
-                _services.AddTransient<T, TImpl>();
-        }
-
-    }
 }
-#endif

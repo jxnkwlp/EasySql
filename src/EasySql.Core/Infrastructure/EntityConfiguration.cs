@@ -15,7 +15,7 @@ namespace EasySql
             _loader = loader;
         }
 
-        public EntityDefintion FindEntity(Type entityType)
+        public EntityDefintion Find(Type entityType)
         {
             if (_entities.ContainsKey(entityType))
                 return _entities[entityType];
@@ -23,7 +23,7 @@ namespace EasySql
             return null;
         }
 
-        public EntityDefintion RegisterEntity(Type entityType)
+        public EntityDefintion Register(Type entityType)
         {
             if (!_entities.ContainsKey(entityType))
                 _entities[entityType] = _loader.Load(entityType);

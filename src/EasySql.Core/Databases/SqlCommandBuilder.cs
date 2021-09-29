@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using EasySql.Query;
 
 namespace EasySql.Databases
 {
@@ -12,6 +13,8 @@ namespace EasySql.Databases
 
         public IReadOnlyList<ISqlCommandParameter> Parameters => _parameters;
 
+        public QueryResultType QueryResultType { get; set; }
+
         public ISqlCommandBuilder AddParameter(ISqlCommandParameter parameter)
         {
             _parameters.Add(parameter);
@@ -21,10 +24,8 @@ namespace EasySql.Databases
 
         public ISqlCommandBuilder Append(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new System.ArgumentException($"'{nameof(value)}' cannot be null or whitespace.", nameof(value));
-            }
+            if (value == null)
+                throw new System.ArgumentNullException(nameof(value));
 
             _sb.Append(value);
             return this;
@@ -39,7 +40,7 @@ namespace EasySql.Databases
         public IDatabaseCommand Build()
         {
             // TODO 
-            return new DatabaseCommand(_sb.ToString(), Parameters);
+            return new DatabaseCommand(_sb.ToString(), Parameters, QueryResultType);
         }
 
         public ISqlCommandBuilder DecrementIndent()

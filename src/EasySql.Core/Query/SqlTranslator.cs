@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using EasySql.Databases;
 using EasySql.Databases.TypeMappings;
-using EasySql.Infrastructure;
 using EasySql.Query.SqlExpressions;
 
 namespace EasySql.Query
@@ -30,7 +29,7 @@ namespace EasySql.Query
             { ExpressionType.Or, " | " }
         };
 
-        private readonly ISqlCommandBuilder _sqlCommandBuilder = new SqlCommandBuilder();
+        private readonly ISqlCommandBuilder _sqlCommandBuilder;
 
         protected virtual string AliasSeparator { get; } = " AS ";
 
@@ -39,15 +38,22 @@ namespace EasySql.Query
 
         public SqlTranslator(QueryContext queryContext)
         {
-            _sqlGenerationHelper = queryContext.Options.GetRequiredService<ISqlGenerationHelper>();
-            _typeMappingConfiguration = queryContext.Options.GetRequiredService<ITypeMappingConfiguration>();
+            _sqlCommandBuilder = queryContext.SqlCommandBuilder;
+            _sqlGenerationHelper = queryContext.SqlGenerationHelper;
+            _typeMappingConfiguration = queryContext.TypeMappingConfiguration;
         }
 
         public ISqlCommandBuilder Translate(SqlExpression expression)
         {
-            var result = Visit(expression);
+            if (expression is QueryExpression queryExpression)
+            {
+                _sqlCommandBuilder.QueryResultType = queryExpression.ResultType;
 
-            return _sqlCommandBuilder;
+                var result = Visit(expression);
+
+                return _sqlCommandBuilder;
+            }
+            else return null;
         }
 
         public override Expression Visit(Expression node)
@@ -92,7 +98,7 @@ namespace EasySql.Query
             {
                 VisitList(query.Projections.ToArray(), () =>
                 {
-                    _sqlCommandBuilder.Append(" , ");
+                    _sqlCommandBuilder.Append(", ");
                 });
             }
             else
@@ -169,6 +175,8 @@ namespace EasySql.Query
                     .Append(AliasSeparator)
                     .Append(_sqlGenerationHelper.DelimitIdentifier(expression.Alias));
             }
+
+            _sqlCommandBuilder.Append(" ");
 
             return expression;
         }
@@ -288,12 +296,24 @@ namespace EasySql.Query
 
         protected virtual Expression VisitSqlFunction(SqlFunctionExpression expression)
         {
-            _sqlCommandBuilder.Append(expression.Name);
+            if (expression.Operand != null)
+            {
+                Visit(expression.Operand);
+            }
+
+            if (!string.IsNullOrEmpty(expression.Schema))
+                _sqlCommandBuilder.Append(expression.Schema).Append(".");
+
+            _sqlCommandBuilder
+                .Append(expression.Name)
+                .Append(" (");
 
             VisitList(expression.Arguments.ToArray(), () =>
             {
-                _sqlCommandBuilder.Append(" , ");
+                _sqlCommandBuilder.Append(", ");
             });
+
+            _sqlCommandBuilder.Append(")");
 
             return expression;
         }
@@ -306,7 +326,7 @@ namespace EasySql.Query
 
         protected virtual Expression VisitSqlFragment(SqlFragmentExpression expression)
         {
-            _sqlCommandBuilder.Append("(").Append(expression.Sql).Append(")");
+            _sqlCommandBuilder.Append(expression.Sql);
 
             return expression;
         }
