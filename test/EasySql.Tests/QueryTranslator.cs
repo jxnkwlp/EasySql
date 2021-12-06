@@ -8,33 +8,23 @@ using NUnit.Framework;
 
 namespace EasySql.Tests
 {
-    public class QueryTranslator
-    {
-        private DbContext _dbContext = null;
-
-        [SetUp]
-        public void Setup()
-        {
-            _dbContext = new DbContext(b =>
-            {
-                b.UseSqlServer("server=.;database=Northwind;uid=sa;password=Pass@123456");
-            });
-
-        }
-
+    public class QueryTranslator: TestBase
+    { 
         private QueryExpression ToQueryExpression(IQueryable queryable)
         {
             if (queryable.Provider is EntityQueryProvider entityQueryProvider)
             {
-                var queryContext = entityQueryProvider.QueryContext;
+                var queryContextFactory = DbContext.GetRequiredService<IQueryContextFactory>();
 
-                var executor = new QueryExecutor(queryContext, queryContext.LoggerFactory);
+                var context = queryContextFactory.Create(DbContext.Options);
 
-                return executor.Translate(queryable.Expression) as QueryExpression;
+                var executor = new QueryExecutor(DbContext.Options);
+
+                return executor.Translate(context, queryable.Expression);
             }
             else
             {
-                Assert.Fail();
+                Assert.Fail($"The queryable provider type is '{queryable.Provider.GetType()}', it must be EntityQueryProvider");
                 return null;
             }
         }
@@ -42,7 +32,7 @@ namespace EasySql.Tests
         [Test]
         public void Expression_Projection_1()
         {
-            var query = _dbContext.Query<Order>().Where(x => x.Id > 0);
+            var query = DbContext.Query<Order>().Where(x => x.Id > 0);
 
             var expression = ToQueryExpression(query);
             Assert.NotNull(expression);
@@ -57,7 +47,7 @@ namespace EasySql.Tests
         [Test]
         public void Expression_Projection_2()
         {
-            var query = _dbContext.Query<Order>().Where(x => x.OrderDate != null);
+            var query = DbContext.Query<Order>().Where(x => x.OrderDate != null);
 
             var expression = ToQueryExpression(query);
             Assert.NotNull(expression);
@@ -73,7 +63,7 @@ namespace EasySql.Tests
         {
             var now = DateTime.Now;
 
-            var query = _dbContext.Query<Order>().Where(x => x.OrderDate <= now);
+            var query = DbContext.Query<Order>().Where(x => x.OrderDate <= now);
 
             var expression = ToQueryExpression(query);
             Assert.NotNull(expression);
@@ -88,7 +78,7 @@ namespace EasySql.Tests
         [Test]
         public void Expression_Projection_4()
         {
-            var query = _dbContext.Query<Product>().Where(x => x.Discontinued);
+            var query = DbContext.Query<Product>().Where(x => x.Discontinued);
 
             var expression = ToQueryExpression(query);
             Assert.NotNull(expression);
