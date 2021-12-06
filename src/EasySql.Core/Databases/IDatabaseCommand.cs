@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using EasySql.Query;
+using System.Data.Common;
 
 namespace EasySql.Databases
 {
@@ -7,14 +7,18 @@ namespace EasySql.Databases
     {
         string CommandText { get; }
 
-        QueryResultType ResultType { get; }
+        IReadOnlyList<IDatabaseCommandParameter> Parameters { get; }
 
-        IReadOnlyList<ISqlCommandParameter> Parameters { get; }
+        DbCommand CreateDbCommand(DatabaseCommandContext context);
 
         int ExecuteNonQuery(DatabaseCommandContext context);
 
         object ExecuteScalar(DatabaseCommandContext context);
 
-        ISqlDataReader ExecuteReader(DatabaseCommandContext context);
+        IDatabaseDataReader ExecuteReader(DatabaseCommandContext context);
+
+        // TODO 
+        // ValueTask<int> ExecuteNonQueryAsync(DatabaseCommandContext context);
+
     }
 }

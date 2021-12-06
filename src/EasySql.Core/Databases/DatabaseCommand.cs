@@ -1,64 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Threading.Tasks;
-using EasySql.Query;
+using Microsoft.Extensions.Logging;
 
 namespace EasySql.Databases
 {
     public class DatabaseCommand : IDatabaseCommand
     {
-        public DatabaseCommand(string commandText, IReadOnlyList<ISqlCommandParameter> parameters, QueryResultType resultType)
+        public DatabaseCommand(string commandText, IReadOnlyList<IDatabaseCommandParameter> parameters)
         {
             CommandText = commandText;
             Parameters = parameters;
-            ResultType = resultType;
         }
 
         public string CommandText { get; }
 
-        public IReadOnlyList<ISqlCommandParameter> Parameters { get; }
-
-        public QueryResultType ResultType { get; }
+        public IReadOnlyList<IDatabaseCommandParameter> Parameters { get; }
 
         public int ExecuteNonQuery(DatabaseCommandContext context)
         {
-            var command = CreateDbCommand(context);
+            var logger = context.LoggerFactory.CreateLogger<DatabaseCommand>();
 
-            return command.ExecuteNonQuery();
+            using (var command = CreateDbCommand(context))
+            {
+                try
+                {
+                    return command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Executed dbCommand failed.");
+
+                    throw;
+                }
+            }
         }
 
-        public ValueTask<int> ExecuteNonQueryAsync(DatabaseCommandContext context)
+        public IDatabaseDataReader ExecuteReader(DatabaseCommandContext context)
         {
-            throw new NotImplementedException();
-        }
+            var logger = context.LoggerFactory.CreateLogger<DatabaseCommand>();
 
-        public ISqlDataReader ExecuteReader(DatabaseCommandContext context)
-        {
-            var command = CreateDbCommand(context);
+            using (var command = CreateDbCommand(context))
+            {
+                try
+                {
+                    var reader = command.ExecuteReader();
 
-            var reader = command.ExecuteReader();
+                    return new DatabaseDataReader(reader, context);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Executed dbCommand failed.");
 
-            return new SqlDataReader(reader);
+                    throw;
+                }
+            }
         }
 
         public object ExecuteScalar(DatabaseCommandContext context)
         {
-            var command = CreateDbCommand(context);
+            var logger = context.LoggerFactory.CreateLogger<DatabaseCommand>();
 
-            return command.ExecuteScalar();
+            using (var command = CreateDbCommand(context))
+            {
+                try
+                {
+                    return command.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Executed dbCommand failed.");
+
+                    throw;
+                }
+            }
         }
 
-        public ValueTask<object> ExecuteScalarAsync(DatabaseCommandContext context)
+        public DbCommand CreateDbCommand(DatabaseCommandContext context)
         {
-            throw new NotImplementedException();
-        }
+            var connection = context.Connection.CreateDbConnection();
 
-        private DbCommand CreateDbCommand(DatabaseCommandContext context)
-        {
             context.Connection.Open();
 
-            var command = context.Connection.DbConnection.CreateCommand();
+            var command = connection.CreateCommand();
 
             command.CommandText = CommandText;
 
@@ -66,5 +90,6 @@ namespace EasySql.Databases
 
             return command;
         }
+
     }
 }

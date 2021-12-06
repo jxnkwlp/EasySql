@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using EasySql;
 using EasySql.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +12,6 @@ namespace ConsoleApp1
 {
     internal class Program
     {
-
         private static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
@@ -48,14 +50,38 @@ namespace ConsoleApp1
             // Console.WriteLine(query2.Where(x => x.Discontinued).ToSqlText());
             // Console.WriteLine(query.Where(x => x.RequiredDate >= now && x.CustomerID != null).ToSqlText());
 
-            // query.Count(x => !string.IsNullOrEmpty(x.CustomerID));
+            foreach (var item in query.ToArray())
+            {
+                Console.WriteLine($"Id: {item.Id}");
+            }
+
+            // Console.WriteLine(query.Any());
+
+            // Console.WriteLine(query.Count(x => !string.IsNullOrEmpty(x.CustomerID)));
 
             // query.Count(x => x.ShipName.Contains("a")).ToList();
             // query.Where(x => x.ShipName.StartsWith("a")).ToList();
             // query.Where(x => x.ShipName.EndsWith("a")).ToList();
             // query.Where(x => x.OrderDate).ToList();
 
+            //ParameterExpression paramExpr = Expression.Parameter(typeof(int), "arg");
 
+            //LambdaExpression lambdaExpr = Expression.Lambda<Func<int, int>>(
+            //    Expression.Add(
+            //        paramExpr,
+            //        Expression.Constant(1)
+            //    ),
+            //    new List<ParameterExpression>() { paramExpr }
+            //);
+
+            //// Print out the expression.
+            //Console.WriteLine(lambdaExpr);
+
+            //// Compile and run the lamda expression.
+            //// The value of the parameter is 1.
+            //Console.WriteLine(lambdaExpr.Compile().DynamicInvoke());
+
+            // query.ToList();
 
             // query.Where(x => x.Id <= 10).ToList();
             // query.Where(x => (x.Id <= 10 || x.Id > 30) && x.Age > 50).ToList();
@@ -88,6 +114,23 @@ namespace ConsoleApp1
         }
     }
 
+    public class TestResult<T> : IEnumerable<T>
+    {
+        public TestResult()
+        {
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return (IEnumerator<T>)new List<T>();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
     public class Student
     {
         public int Id { get; set; }
@@ -106,6 +149,9 @@ namespace ConsoleApp1
         public DateTime? OrderDate { get; set; }
         public DateTime? RequiredDate { get; set; }
         public string ShipName { get; set; }
+        public string ShipAddress { get; set; }
+        public int? ShipVia { get; set; }
+        public decimal Freight { get; set; }
 
     }
 

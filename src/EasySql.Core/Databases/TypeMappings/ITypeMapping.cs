@@ -13,4 +13,10 @@ namespace EasySql.Databases.TypeMappings
 
         string GetConstantLiteral(object value);
     }
+
+    public interface ITypeMapping<T> : ITypeMapping
+    {
+        T GetValue(object value);
+    }
+
 }

@@ -331,7 +331,7 @@ namespace EasySql.Query
 
             _queryExpression.ApplyLimit(1);
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             return node;
         }
@@ -349,7 +349,7 @@ namespace EasySql.Query
 
             _queryExpression.ApplyLimit(1);
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             return node;
         }
@@ -383,7 +383,7 @@ namespace EasySql.Query
         {
             _queryExpression.ClearProjections();
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             if (node != null)
             {
@@ -435,7 +435,7 @@ namespace EasySql.Query
 
             _queryExpression.SetIsDistinct(true);
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             return source;
         }
@@ -449,7 +449,7 @@ namespace EasySql.Query
 
             _queryExpression.ApplyLimit(1);
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             return node;
         }
@@ -467,7 +467,7 @@ namespace EasySql.Query
             _queryExpression.ReverseOrdering();
             _queryExpression.ApplyLimit(1);
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             return node;
         }
@@ -481,7 +481,7 @@ namespace EasySql.Query
 
             _queryExpression.ApplyLimit(1);
 
-            _queryExpression.ChangeResultType(QueryResultType.Single);
+            _queryExpression.ChangeResultType(QueryType.Single);
 
             return node;
         }

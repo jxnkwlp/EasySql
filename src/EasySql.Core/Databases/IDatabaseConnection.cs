@@ -3,13 +3,13 @@ using System.Data.Common;
 
 namespace EasySql.Databases
 {
-    public interface IDatabaseConnection
+    public interface IDatabaseConnection : IDisposable
     {
-        Guid ConnectionId { get; set; }
+        Guid ConnectionId { get; }
 
-        string ConnectionString { get; set; }
+        string ConnectionString { get; }
 
-        DbConnection DbConnection { get; set; }
+        DbConnection DbConnection { get; }
 
         int? CommandTimeout { get; set; }
 
@@ -18,5 +18,7 @@ namespace EasySql.Databases
         bool Open();
 
         bool Close();
+
+        DbConnection CreateDbConnection();
     }
 }

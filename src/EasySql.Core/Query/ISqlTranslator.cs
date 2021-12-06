@@ -5,6 +5,6 @@ namespace EasySql.Query
 {
     public interface ISqlTranslator
     {
-        ISqlCommandBuilder Translate(SqlExpression expression);
+        IDatabaseCommand CreateDatabaseCommand(SqlExpression expression);
     }
 }

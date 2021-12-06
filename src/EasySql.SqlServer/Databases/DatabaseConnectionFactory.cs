@@ -6,7 +6,9 @@ namespace EasySql.SqlServer.Databases
     {
         public IDatabaseConnection Create(DbContextOptions options)
         {
-            return new SqlServerDatabaseConnection(options.DatabaseProvider.ConnectionString);
+            var provider = options.DatabaseProvider as SqlServerDatabaseProvider;
+
+            return new SqlServerDatabaseConnection(provider.ConnectionString);
         }
     }
 }

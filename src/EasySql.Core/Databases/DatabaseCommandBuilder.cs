@@ -1,28 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using EasySql.Query;
 
 namespace EasySql.Databases
 {
-    public class SqlCommandBuilder : ISqlCommandBuilder
+    public class DatabaseCommandBuilder : IDatabaseCommandBuilder
     {
         private int _indent = 0;
         private readonly int _indentSize = 4;
         private readonly StringBuilder _sb = new StringBuilder();
-        private readonly List<ISqlCommandParameter> _parameters = new List<ISqlCommandParameter>();
+        private readonly List<IDatabaseCommandParameter> _parameters = new List<IDatabaseCommandParameter>();
 
-        public IReadOnlyList<ISqlCommandParameter> Parameters => _parameters;
+        public IReadOnlyList<IDatabaseCommandParameter> Parameters => _parameters;
 
-        public QueryResultType QueryResultType { get; set; }
-
-        public ISqlCommandBuilder AddParameter(ISqlCommandParameter parameter)
+        public IDatabaseCommandBuilder AddParameter(IDatabaseCommandParameter parameter)
         {
             _parameters.Add(parameter);
 
             return this;
         }
 
-        public ISqlCommandBuilder Append(string value)
+        public IDatabaseCommandBuilder Append(string value)
         {
             if (value == null)
                 throw new System.ArgumentNullException(nameof(value));
@@ -31,7 +28,7 @@ namespace EasySql.Databases
             return this;
         }
 
-        public ISqlCommandBuilder AppendLine(string value = null)
+        public IDatabaseCommandBuilder AppendLine(string value = null)
         {
             _sb.AppendLine(value);
             return this;
@@ -40,10 +37,10 @@ namespace EasySql.Databases
         public IDatabaseCommand Build()
         {
             // TODO 
-            return new DatabaseCommand(_sb.ToString(), Parameters, QueryResultType);
+            return new DatabaseCommand(_sb.ToString(), Parameters);
         }
 
-        public ISqlCommandBuilder DecrementIndent()
+        public IDatabaseCommandBuilder DecrementIndent()
         {
             if (_indent <= 0)
                 return this;
@@ -53,7 +50,7 @@ namespace EasySql.Databases
             return this;
         }
 
-        public ISqlCommandBuilder IncrementIndent()
+        public IDatabaseCommandBuilder IncrementIndent()
         {
             _indent += _indentSize;
 

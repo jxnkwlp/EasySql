@@ -12,11 +12,11 @@ namespace EasySql.Query
         private readonly IEntityConfiguration _entityConfiguration;
         private readonly ITypeMappingConfiguration _typeMappingConfiguration;
         private readonly ISqlGenerationHelper _sqlGenerationHelper;
-        private readonly ISqlCommandBuilder _sqlCommandBuilder;
+        private readonly IDatabaseCommandBuilder _sqlCommandBuilder;
         private readonly IDatabaseConnectionFactory _databaseConnectionFactory;
         private readonly IQueryableMethodTranslator _queryableMethodTranslator;
 
-        public QueryContextFactory(ILoggerFactory loggerFactory, IDatabase database, IEntityConfiguration entityConfiguration, ITypeMappingConfiguration typeMappingConfiguration, ISqlGenerationHelper sqlGenerationHelper, ISqlCommandBuilder sqlCommandBuilder, IDatabaseConnectionFactory databaseConnectionFactory, IQueryableMethodTranslator queryableMethodTranslator)
+        public QueryContextFactory(ILoggerFactory loggerFactory, IDatabase database, IEntityConfiguration entityConfiguration, ITypeMappingConfiguration typeMappingConfiguration, ISqlGenerationHelper sqlGenerationHelper, IDatabaseCommandBuilder sqlCommandBuilder, IDatabaseConnectionFactory databaseConnectionFactory, IQueryableMethodTranslator queryableMethodTranslator)
         {
             _loggerFactory = loggerFactory;
             _database = database;

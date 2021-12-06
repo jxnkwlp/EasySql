@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using EasySql.Infrastructure;
@@ -18,7 +19,7 @@ namespace EasySql.Query.SqlExpressions
 
         public string Alias { get; set; }
 
-        public QueryResultType ResultType { get; private set; } = QueryResultType.Enumerable;
+        public QueryType ResultType { get; private set; } = QueryType.Enumerable;
 
         public QueryExpression()
         {
@@ -49,6 +50,11 @@ namespace EasySql.Query.SqlExpressions
 
         public void SetTable(EntityDefintion entity)
         {
+            if (entity is null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             Table = new TableExpression(entity, entity.Name.Substring(0, 1).ToLower());
 
             foreach (var item in entity.Colunmns)
@@ -85,7 +91,7 @@ namespace EasySql.Query.SqlExpressions
             GroupBy.Add(expression);
         }
 
-        public void ChangeResultType(QueryResultType resultType)
+        public void ChangeResultType(QueryType resultType)
         {
             ResultType = resultType;
         }

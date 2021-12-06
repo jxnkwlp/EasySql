@@ -1,6 +1,6 @@
 ﻿namespace EasySql.Databases
 {
-    public interface ISqlCommandContextFactory
+    public interface IDatabaseCommandContextFactory
     {
         DatabaseCommandContext Create(DbContextOptions options);
     }

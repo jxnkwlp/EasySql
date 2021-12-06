@@ -38,7 +38,7 @@ namespace EasySql
 
             Services.AddTransient<IQueryableMethodTranslator, QueryableMethodTranslator>();
 
-            Services.AddTransient<ISqlCommandBuilder, SqlCommandBuilder>();
+            Services.AddTransient<IDatabaseCommandBuilder, DatabaseCommandBuilder>();
 
             Services.AddTransient<IDatabase, Database>();
 

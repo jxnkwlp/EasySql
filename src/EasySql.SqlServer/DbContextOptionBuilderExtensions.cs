@@ -9,7 +9,7 @@ namespace EasySql.SqlServer
     {
         public static DbContextOptionBuilder UseSqlServer(this DbContextOptionBuilder builder, string connectionString)
         {
-            builder.SetDatabaseProvider(new DatabaseProvider(connectionString));
+            builder.SetDatabaseProvider(new SqlServerDatabaseProvider(connectionString));
 
             builder.AddService(ServiceDescriptor.Transient<IDatabaseConnectionFactory, DatabaseConnectionFactory>());
             builder.ReplaceService(ServiceDescriptor.Singleton<ITypeMappingConfiguration, SqlServerTypeMappingConfiguration>());

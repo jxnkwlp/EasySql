@@ -7,7 +7,7 @@ namespace EasySql.Query
 {
     public class QueryContext
     {
-        public QueryContext(DbContextOptions options, ILoggerFactory loggerFactory, IDatabase database, IEntityConfiguration entityConfiguration, ITypeMappingConfiguration typeMappingConfiguration, ISqlGenerationHelper sqlGenerationHelper, ISqlCommandBuilder sqlCommandBuilder, IDatabaseConnectionFactory databaseConnectionFactory, IQueryableMethodTranslator queryableMethodTranslator)
+        public QueryContext(DbContextOptions options, ILoggerFactory loggerFactory, IDatabase database, IEntityConfiguration entityConfiguration, ITypeMappingConfiguration typeMappingConfiguration, ISqlGenerationHelper sqlGenerationHelper, IDatabaseCommandBuilder sqlCommandBuilder, IDatabaseConnectionFactory databaseConnectionFactory, IQueryableMethodTranslator queryableMethodTranslator)
         {
             Options = options;
             LoggerFactory = loggerFactory;
@@ -26,7 +26,7 @@ namespace EasySql.Query
         public IEntityConfiguration EntityConfiguration { get; }
         public ITypeMappingConfiguration TypeMappingConfiguration { get; }
         public ISqlGenerationHelper SqlGenerationHelper { get; }
-        public ISqlCommandBuilder SqlCommandBuilder { get; }
+        public IDatabaseCommandBuilder SqlCommandBuilder { get; }
         public IDatabaseConnectionFactory DatabaseConnectionFactory { get; }
         public IQueryableMethodTranslator QueryableMethodTranslator { get; }
     }

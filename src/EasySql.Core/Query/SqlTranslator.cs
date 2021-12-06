@@ -29,7 +29,7 @@ namespace EasySql.Query
             { ExpressionType.Or, " | " }
         };
 
-        private readonly ISqlCommandBuilder _sqlCommandBuilder;
+        private readonly IDatabaseCommandBuilder _sqlCommandBuilder;
 
         protected virtual string AliasSeparator { get; } = " AS ";
 
@@ -43,17 +43,16 @@ namespace EasySql.Query
             _typeMappingConfiguration = queryContext.TypeMappingConfiguration;
         }
 
-        public ISqlCommandBuilder Translate(SqlExpression expression)
+        public IDatabaseCommand CreateDatabaseCommand(SqlExpression expression)
         {
             if (expression is QueryExpression queryExpression)
             {
-                _sqlCommandBuilder.QueryResultType = queryExpression.ResultType;
-
                 var result = Visit(expression);
 
-                return _sqlCommandBuilder;
+                return _sqlCommandBuilder.Build();
             }
-            else return null;
+
+            return null;
         }
 
         public override Expression Visit(Expression node)

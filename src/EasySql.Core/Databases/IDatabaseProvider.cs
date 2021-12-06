@@ -4,6 +4,6 @@
     {
         string Name { get; }
 
-        string ConnectionString { get; }
+        string Version { get; }
     }
 }

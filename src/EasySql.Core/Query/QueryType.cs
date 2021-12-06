@@ -1,8 +1,9 @@
 ﻿namespace EasySql.Query
 {
-    public enum QueryResultType
+    public enum QueryType
     {
         Enumerable,
         Single,
+        SingleOrDefault
     }
 }

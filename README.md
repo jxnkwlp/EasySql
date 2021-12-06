@@ -11,10 +11,10 @@ TODO
 Version 1.0
 - [x]  Table/Column mapping 
 - [ ]  Type mapping
-- [ ]  Group by method
-- [ ]  Join method
+- [ ]  Translator (Group by, Join ...)
 - [ ]  Fluent configration
-- [ ]  ... todo
+- [ ]  Diagnostics support
+- [ ]  ...  
 
 Version 2.0
 - [ ] Migrations

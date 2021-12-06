@@ -14,6 +14,7 @@ namespace EasySql.Databases.TypeMappings
             { typeof(double), new DoubleTypeMapping() },
             { typeof(float), new FloatTypeMapping() },
             { typeof(Guid), new GuidTypeMapping() },
+            { typeof(Guid?), new GuidNullableTypeMapping() },
             { typeof(int), new IntTypeMapping() },
             { typeof(string), new StringTypeMapping() },
         };
