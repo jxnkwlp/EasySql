@@ -14,5 +14,6 @@ namespace EasySql
 
         void Remove<T>(params object[] keys) where T : class;
 
+        int SaveChanges();
     }
 }

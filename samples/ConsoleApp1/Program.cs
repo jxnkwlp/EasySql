@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using EasySql;
 using EasySql.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +18,7 @@ namespace ConsoleApp1
 
             //  
             IServiceCollection services = new ServiceCollection();
+            services.AddLogging();
 
             //services.AddSingleton<IEntityConfiguration, EntityConfiguration>();
             //services.AddSingleton<IEntityConfigurationLoader, EntityConfigurationLoader>();
@@ -43,6 +43,12 @@ namespace ConsoleApp1
             var query2 = dbContext.Query<Product>();
             var now = DateTime.Now;
 
+
+            dbContext.Add(new Order
+            {
+            });
+             
+
             // Console.WriteLine(query.Where(x => x.ShipName == null).ToSqlText());
             // Console.WriteLine(query.Where(x => x.ShipName != "a").ToSqlText());
             //  Console.WriteLine(query.Where(x => x.Id > p1).ToSqlText());
@@ -50,10 +56,10 @@ namespace ConsoleApp1
             // Console.WriteLine(query2.Where(x => x.Discontinued).ToSqlText());
             // Console.WriteLine(query.Where(x => x.RequiredDate >= now && x.CustomerID != null).ToSqlText());
 
-            foreach (var item in query.ToArray())
-            {
-                Console.WriteLine($"Id: {item.Id}");
-            }
+            //foreach (var item in query.ToArray())
+            //{
+            //    Console.WriteLine($"Id: {item.Id}");
+            //}
 
             // Console.WriteLine(query.Any());
 

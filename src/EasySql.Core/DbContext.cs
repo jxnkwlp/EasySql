@@ -40,7 +40,7 @@ namespace EasySql
             return new QueryExecutor(Options);
         }
 
-        public IEntityQueryable<T> Query<T>() where T : class
+        public virtual IEntityQueryable<T> Query<T>() where T : class
         {
             var entityConfiguration = Options.ServiceProvider.GetRequiredService<IEntityConfiguration>();
 
@@ -53,22 +53,22 @@ namespace EasySql
             return new EntityQueryable<T>(queryProvider, new EntityQueryExpression(entityType));
         }
 
-        public void Add<T>(T instance) where T : class
+        public virtual void Add<T>(T instance) where T : class
         {
             throw new System.NotImplementedException();
         }
 
-        public void Remove<T>(T instance) where T : class
+        public virtual void Remove<T>(T instance) where T : class
         {
             throw new System.NotImplementedException();
         }
 
-        public void Remove<T>(params object[] keys) where T : class
+        public virtual void Remove<T>(params object[] keys) where T : class
         {
             throw new System.NotImplementedException();
         }
 
-        public void Update<T>(T instance) where T : class
+        public virtual void Update<T>(T instance) where T : class
         {
             throw new System.NotImplementedException();
         }
@@ -78,5 +78,9 @@ namespace EasySql
             return Options.ServiceProvider.GetRequiredService<T>();
         }
 
+        public virtual int SaveChanges()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
